@@ -1,0 +1,40 @@
+bool LineManager::run(std::ostream& os)
+	{
+
+		bool allOrder = false;
+		static int num_Of_Iteration_Run_Function = 0;
+
+		os << "Line Manager Iteration: " << num_Of_Iteration_Run_Function + 1 << endl;
+
+		if (!pending.empty())
+		{
+			*m_firstStation += std::move(pending.front());
+			pending.pop_front();
+		}
+
+		std::for_each(activeLine.begin(), activeLine.end(), [&](Workstation* work) {
+			work->fill(os);
+		});
+
+		auto result2 = [&](Workstation* work) {
+			work->attemptToMoveOrder();
+		};
+		std::for_each(activeLine.begin(), activeLine.end(), result2);
+
+		if (m_cntCustomerOrder == (completed.size() + incomplete.size()))
+		{
+			allOrder = true;
+		}
+		num_Of_Iteration_Run_Function++;
+		return allOrder;
+	}
+
+
+
+
+	void LineManager::display(std::ostream& os) const
+	{
+		for (auto& orders : activeLine) {
+			orders->display(os);
+		}
+	}
